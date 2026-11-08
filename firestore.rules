@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /sharedData/main {
+      // Los visitantes de la página pueden leer las finanzas compartidas.
+      allow read: if true;
+
+      // Solo la cuenta Google indicada puede publicar cambios.
+      // Reemplaza el correo antes de publicar estas reglas.
+      allow create, update: if request.auth != null
+        && request.auth.token.email == "REEMPLAZAR_CON_TU_CORREO_GOOGLE"
+        && request.resource.data.keys().hasOnly([
+          "adri_accounts",
+          "adri_transactions",
+          "adri_ves_rate",
+          "adri_ves_rate_mode",
+          "adri_bcv_rate_date",
+          "updatedAt",
+          "updatedBy"
+        ]);
+
+      allow delete: if false;
+    }
+  }
+}
